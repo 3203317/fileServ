@@ -1,0 +1,37 @@
+/*!
+ * foreworld-fileServ
+ * Copyright(c) 2015 foreworld-fileServ <3203317@qq.com>
+ * MIT Licensed
+ */
+'use strict';
+
+var util = require('speedt-utils'),
+	cache = util.cache;
+
+var conf = require('../../settings');
+
+var fs = require('fs'),
+	path = require('path'),
+	cwd = process.cwd(),
+	qs = require('querystring'),
+	velocity = require('velocityjs');
+
+var biz = {
+	// TODO
+};
+
+var exports = module.exports;
+
+/**
+ *
+ * @param
+ * @return
+ */
+exports.indexUI = function(req, res, next){
+	res.render('front/Index', {
+		conf: conf,
+		title: conf.corp.name,
+		description: '',
+		keywords: ',fileServ,html5'
+	});
+};
