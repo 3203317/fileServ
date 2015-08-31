@@ -22,7 +22,7 @@ var macros = require('./lib/macro'),
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3012)
+app.set('port', process.env.PORT || 3013)
 	.set('views', path.join(__dirname, 'views'))
 	.set('view engine', 'html')
 	/* use */
