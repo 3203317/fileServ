@@ -35,3 +35,17 @@ exports.indexUI = function(req, res, next){
 		keywords: ',fileServ,html5'
 	});
 };
+
+/**
+ *
+ * @param
+ * @return
+ */
+exports.testUI = function(req, res, next){
+	res.render('front/Test', {
+		conf: conf,
+		title: conf.corp.name,
+		description: '',
+		keywords: ',fileServ,html5'
+	});
+};

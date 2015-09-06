@@ -6,7 +6,6 @@
 'use strict';
 
 var express = require('express'),
-	MongoStore = require('connect-mongo')(express),
 	flash = require('connect-flash'),
 	velocity = require('velocityjs'),
 	fs = require('fs'),

@@ -31,6 +31,7 @@ module.exports = function(app){
  * @return
  */
 function proc_front(app){
+	app.get('/test$', front.site.testUI);
 	app.get('/', front.site.indexUI);
 }
 
