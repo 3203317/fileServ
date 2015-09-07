@@ -49,3 +49,15 @@ exports.testUI = function(req, res, next){
 		keywords: ',fileServ,html5'
 	});
 };
+
+/**
+ *
+ * @param
+ * @return
+ */
+exports.upload = function(req, res, next){
+	var result = { success: false },
+		data = req._data;
+	console.log('file up');
+	res.send(result);
+};
