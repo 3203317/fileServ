@@ -70,10 +70,11 @@
 		// }*#
 		$(function(){
 			$('#upFrm_Choose').uploadify({
+				debug: !0,
 				buttonCursor: 'arrow',
 				requeueErrors: true,
 				fileSizeLimit: '50KB',
-				method: 'GET',
+				method: 'POST',
 				auto: true,
 				fileTypeExts: '*.doc',
 				fileTypeDesc: '文档',
