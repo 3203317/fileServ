@@ -32,7 +32,7 @@ module.exports = function(app){
  */
 function proc_front(app){
 	app.get('/test/', front.site.testUI);
-	app.post('/upload$', front.site.upload);
+	app.post('/upload$', express.valiPostData, front.site.upload);
 	app.get('/', front.site.indexUI);
 }
 

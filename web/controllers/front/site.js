@@ -58,6 +58,6 @@ exports.testUI = function(req, res, next){
 exports.upload = function(req, res, next){
 	var result = { success: false },
 		data = req._data;
-	console.log('file up');
+	result.msg = '上传成功';
 	res.send(result);
 };
