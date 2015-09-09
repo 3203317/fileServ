@@ -8,6 +8,8 @@
 var util = require('speedt-utils'),
 	cache = util.cache;
 
+var formidable = require('formidable');
+
 var conf = require('../../settings');
 
 var fs = require('fs'),
@@ -58,7 +60,32 @@ exports.testUI = function(req, res, next){
 exports.upload = function(req, res, next){
 	var result = { success: false },
 		data = req._data;
-	result.msg = '上传成功';
-	result.data = data;
-	res.send(result);
+
+	exports.getUploader().parse(req, function (err, fields, files){
+		if(err) return next(err);
+
+		result.msg = '上传成功';
+		result.data = data;
+		res.send(result);
+	});
 };
+
+(function(exports){
+	var _uploader = null;
+	/**
+	 * 上传组件
+	 *
+	 * @param
+	 * @return
+	 */
+	exports.getUploader = function(){
+		if(!!_uploader) return _uploader;
+
+		var _uploader = new formidable.IncomingForm();  // 创建上传表单
+		_uploader.encoding = 'utf-8';  // 设置编辑
+		_uploader.uploadDir = path.join(cwd, 'public', 'files');  // 设置上传目录
+		_uploader.keepExtensions = !0;  // 保留后缀
+		_uploader.maxFieldsSize = 2 * 1024 * 1024;  // 文件大小
+		return _uploader;
+	};
+})(exports);
