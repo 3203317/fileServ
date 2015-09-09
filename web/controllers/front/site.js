@@ -59,5 +59,6 @@ exports.upload = function(req, res, next){
 	var result = { success: false },
 		data = req._data;
 	result.msg = '上传成功';
+	result.data = data;
 	res.send(result);
 };

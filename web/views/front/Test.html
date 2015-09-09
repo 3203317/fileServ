@@ -70,7 +70,7 @@
 				buttonCursor: 'arrow',
 				requeueErrors: !0,
 				fileSizeLimit: '150KB',
-				method: 'POST',
+				method: 'get',
 				auto: !1,
 				fileTypeExts: '*.doc;*.docx',
 				fileTypeDesc: '文档',
@@ -79,17 +79,20 @@
 				buttonText: '选择文件',
 				uploader: '/upload',
 				overrideEvents: ['onDialogClose', 'onUploadSuccess', 'onUploadError', 'onSelectError'],
-				formData: {
-					data: JSON.stringify({
-						timestamp: '123456',
-						token: '654321'
-					})
-				}, onSelect: function(){
+				onSelect: function(){
 					// TODO
 				}, onSelectError: function(file, errorCode, errorMsg){
 					alert('文件大小超出限制');
 				}, onUploadError: function(){
 					// TODO
+				}, onUploadStart: function(){
+					var data = {
+						data: JSON.stringify({
+							ts: new Date(),
+							token: '654321'
+						})
+					};
+					$('#upFrm_file_Choose').uploadify('settings', 'formData', data);
 				}
 			});
 			$('#upFrm_btn_upload').click(function(){
