@@ -47,7 +47,7 @@ exports.indexUI = function(req, res, next){
 exports.uploadUI = function(req, res, next){
 	res.render('front/Upload', {
 		conf: conf,
-		title: conf.corp.name,
+		title: '文件上传 | '+ conf.corp.name,
 		description: '',
 		keywords: ',fileServ,html5'
 	});

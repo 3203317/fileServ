@@ -36,7 +36,34 @@
 		</div>
 		#parse('front/_pagelet/Common.IndexJs.html')
 		<script>
+		function openShowModalDialog(window, url, params, height, width){
+			params = params || {};
+
+			height = height || 300;
+			width = width || 500;
+
+			// 最终位置
+			var left = ($(window).width() - width) / 2;
+			var top = ($(window).height() - height) / 2;
+
+			var param_3 = 'dialogWidth:'+ width +'px;';
+				param_3 += 'dialogHeight:'+ height +'px;';
+				param_3 += 'dialogLeft:'+ left +'px;';
+				param_3 += 'dialogTop:'+ top +'px;';
+				param_3 += 'center:yes;';
+				param_3 += 'help:yes;';
+				param_3 += 'resizable:yes;';
+				param_3 += 'status:no';
+
+			var val = showModalDialog(url, params, param_3);
+			return val;
+		}
+
 		$(function(){
+			$('#addFrm_btn_choose').click(function(){
+				var val = openShowModalDialog(window, '/upload/', {}, 300, 500);
+				console.log(val);
+			});
 			// TODO
 			$('#addFrm_btn_ok').click(function(){
 				// TODO
