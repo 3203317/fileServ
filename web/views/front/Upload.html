@@ -95,9 +95,16 @@
 					$('#upFrm_file_Choose').uploadify('settings', 'formData', data);
 				}
 			});
+
 			$('#upFrm_btn_upload').click(function(){
 				$('#upFrm_file_Choose').uploadify('upload', '*');
 			});
+
+			window.onbeforeunload = function(){
+				window.returnValue = {
+					success: !0
+				};
+			}
 		});
 		</script>
 	</body>

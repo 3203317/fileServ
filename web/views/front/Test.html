@@ -36,7 +36,7 @@
 		</div>
 		#parse('front/_pagelet/Common.IndexJs.html')
 		<script>
-		function openShowModalDialog(window, url, params, height, width){
+		function openShowModalDialog(window, url, height, width, params){
 			params = params || {};
 
 			height = height || 300;
@@ -55,13 +55,13 @@
 				param_3 += 'resizable:yes;';
 				param_3 += 'status:no';
 
-			var val = showModalDialog(url, params, param_3);
+			var val = showModalDialog(url +'?ts='+ new Date(), params, param_3);
 			return val;
 		}
 
 		$(function(){
 			$('#addFrm_btn_choose').click(function(){
-				var val = openShowModalDialog(window, '/upload/', {}, 300, 500);
+				var val = openShowModalDialog(window, '/upload/', 300, 500, {});
 				console.log(val);
 			});
 			// TODO
