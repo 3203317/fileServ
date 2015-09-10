@@ -2,24 +2,9 @@
 <html lang='zh-CN'>
 	<head>
 		#parse('front/_pagelet/Common.IndexHeader.html')
-		<link rel='stylesheet' type='text/css' href='$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.css'>
 		<style>
 		.container {
 			padding-top: 15px;
-		}
-		.uploadify-button {
-			white-space: nowrap;
-			color: #fff;
-			border: 1px solid transparent;
-			border-radius: 4px;
-			font-weight: 400;
-			background-color: #428bca;
-			border-color: #2b669a;
-			background-repeat: repeat-x;
-			background-image: linear-gradient(to bottom, #428bca 0px, #2d6ca2 100%);
-		}
-		.uploadify-queue-item .cancel a {
-			background: url('$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify-cancel.png') 0 0 no-repeat;
 		}
 		</style>
 	</head>
@@ -30,16 +15,16 @@
 					<div class='panel panel-default'>
 						<div class='panel-body'>
 							<div class='col-md-12'>
-								<form class='form-horizontal'>
+								<form class='form-horizontal' id='addFrm'>
 									<div class='form-group'>
-										<label for='upFrm_file_Choose' class='col-sm-1 control-label'>文件上传</label>
+										<label for='addFrm_btn_choose' class='col-sm-1 control-label'>图片上传</label>
 										<div class='col-sm-11'>
-											<input type='file' class='form-control' id='upFrm_file_Choose' name='Choose' placeholder='选择' multiple='true'>
+											<input type='button' class='btn btn-default' id='addFrm_btn_choose' value='选择文件' />
 										</div>
 									</div>
 									<div class='form-group'>
 										<div class='col-sm-offset-1 col-sm-4'>
-											<input type='button' class='btn btn-primary' id='upFrm_btn_upload' value='上 传' />
+											<input type='button' class='btn btn-primary' id='addFrm_btn_ok' value='保 存' />
 										</div>
 									</div>
 								</form>
@@ -50,53 +35,11 @@
 			</div>
 		</div>
 		#parse('front/_pagelet/Common.IndexJs.html')
-		<script type='text/javascript' src='$!{conf.html.static_res}assets/js/uploadify/3.2.1/jquery.uploadify.min.js'></script>
 		<script>
-		#*// function formatSize(size){
-		// 	return size/1024 +' kb';
-		// }
-		// function choose_file(src){
-		// 	var upFrm_File = document.getElementById('upFrm_File');
-		// 	upFrm_File.value = src.value;
-		// 	if(src.files && 1 === src.files.length){
-		// 		var file = src.files[0];
-		// 		upFrm_File.value = upFrm_File.value +' ('+ formatSize(file.size) +')';
-		// 	}
-		// }*#
 		$(function(){
-			$('#upFrm_file_Choose').uploadify({
-				debug: !0,
-				queueSizeLimit: 5,
-				buttonCursor: 'arrow',
-				requeueErrors: !0,
-				fileSizeLimit: '150KB',
-				method: 'get',
-				auto: !1,
-				fileTypeExts: '*.doc;*.docx',
-				fileTypeDesc: '文档',
-				multi: !1,
-				swf: '$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.swf',
-				buttonText: '选择文件',
-				uploader: '/upload',
-				overrideEvents: ['onDialogClose', 'onUploadSuccess', 'onUploadError', 'onSelectError'],
-				onSelect: function(){
-					// TODO
-				}, onSelectError: function(file, errorCode, errorMsg){
-					alert('文件大小超出限制');
-				}, onUploadError: function(){
-					// TODO
-				}, onUploadStart: function(){
-					var data = {
-						data: JSON.stringify({
-							ts: new Date(),
-							token: '654321'
-						})
-					};
-					$('#upFrm_file_Choose').uploadify('settings', 'formData', data);
-				}
-			});
-			$('#upFrm_btn_upload').click(function(){
-				$('#upFrm_file_Choose').uploadify('upload', '*');
+			// TODO
+			$('#addFrm_btn_ok').click(function(){
+				// TODO
 			});
 		});
 		</script>

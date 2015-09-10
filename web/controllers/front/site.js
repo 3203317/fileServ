@@ -39,6 +39,21 @@ exports.indexUI = function(req, res, next){
 };
 
 /**
+ * 上传页面
+ *
+ * @param
+ * @return
+ */
+exports.uploadUI = function(req, res, next){
+	res.render('front/Upload', {
+		conf: conf,
+		title: conf.corp.name,
+		description: '',
+		keywords: ',fileServ,html5'
+	});
+};
+
+/**
  *
  * @param
  * @return
@@ -46,7 +61,7 @@ exports.indexUI = function(req, res, next){
 exports.testUI = function(req, res, next){
 	res.render('front/Test', {
 		conf: conf,
-		title: conf.corp.name,
+		title: '测试系统',
 		description: '',
 		keywords: ',fileServ,html5'
 	});
