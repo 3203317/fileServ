@@ -62,11 +62,11 @@
 		$(function(){
 			$('#addFrm_btn_choose').click(function(){
 				var url = '/upload/';
-					url += '?apikey=$!data.apikey';
-					url += '&command=$!data.command';
-					url += '&ts=$!data.ts';
-					url += '&userid=$!data.userid';
-					url += '&signature=$!data.signature';
+					url += '?apikey=$!data.apiParams.apikey';
+					url += '&command=$!data.apiParams.command';
+					url += '&ts=$!data.apiParams.ts';
+					url += '&userid=$!data.apiParams.userid';
+					url += '&signature=$!data.apiParams.signature';
 				var result = openShowModalDialog(window, url, 300, 500, {});
 				console.log(result);
 			});

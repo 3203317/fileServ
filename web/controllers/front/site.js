@@ -66,26 +66,44 @@ exports.uploadUI = function(req, res, next){
 	});
 };
 
-/**
- *
- * @param
- * @return
- */
-exports.testUI = function(req, res, next){
-	res.render('front/Test', {
-		conf: conf,
-		title: '上传测试',
-		description: '',
-		keywords: ',fileServ,html5',
-		data: {
+
+(function (exports){
+	/**
+	 * 生成票据
+	 *
+	 * @param
+	 * @return
+	 */
+	function genSignature(data){
+		return '987654321';
+	}
+
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	exports.testUI = function(req, res, next){
+		var apiParams = {
 			userid: 'f39bf8f8f0d44ab98c2ff77240aad5e0',
 			apikey: '123456789',
 			command: 'upload',
-			ts: (new Date()).valueOf(),
-			signature: '987654321'
-		}
-	});
-};
+			ts: (new Date()).valueOf()
+		};
+		// 生成票据
+		apiParams.signature = genSignature(apiParams);
+
+		res.render('front/Test', {
+			conf: conf,
+			title: '上传测试',
+			description: '',
+			keywords: ',fileServ,html5',
+			data: {
+				apiParams: apiParams
+			}
+		});
+	};
+})(exports);
 
 (function (exports){
 
