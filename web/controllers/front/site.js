@@ -45,11 +45,24 @@ exports.indexUI = function(req, res, next){
  * @return
  */
 exports.uploadUI = function(req, res, next){
+	var query = req.query;
+
+	if('upload' !== query.command){
+		return next(new Error('参数异常'));
+	}
+
 	res.render('front/Upload', {
 		conf: conf,
 		title: '文件上传 | '+ conf.corp.name,
 		description: '',
-		keywords: ',fileServ,html5'
+		keywords: ',fileServ,html5',
+		data: {
+			userid: query.userid,
+			apikey: query.apikey,
+			command: query.command,
+			ts: query.ts,
+			signature: query.signature
+		}
 	});
 };
 
@@ -61,11 +74,62 @@ exports.uploadUI = function(req, res, next){
 exports.testUI = function(req, res, next){
 	res.render('front/Test', {
 		conf: conf,
-		title: '测试系统',
+		title: '上传测试',
 		description: '',
-		keywords: ',fileServ,html5'
+		keywords: ',fileServ,html5',
+		data: {
+			userid: 'f39bf8f8f0d44ab98c2ff77240aad5e0',
+			apikey: '123456789',
+			command: 'upload',
+			ts: (new Date()).valueOf(),
+			signature: '987654321'
+		}
 	});
 };
+
+(function (exports){
+
+	/**
+	 * 参数验证
+	 *
+	 * @param
+	 * @return
+	 */
+	function validate(){
+		// TODO
+	}
+
+	/**
+	 * 处理上传
+	 *
+	 * @param
+	 * @return
+	 */
+	function procUpload(req, res, next){
+		var result = { success: false };
+		result.success = true;
+		res.send(result);
+	}
+
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	exports.api = function(req, res, next){
+		var result = { success: false },
+			query = req.query;
+
+		switch(query.command){
+			case 'upload':
+				procUpload(req, res, next);
+				break;
+			default:
+				res.send(result);
+				break;
+		}
+	};
+})(exports);
 
 /**
  *

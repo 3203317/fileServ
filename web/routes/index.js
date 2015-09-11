@@ -34,7 +34,8 @@ function proc_front(app){
 	app.get('/test/', front.site.testUI);
 
 	app.get('/upload/', front.site.uploadUI);
-	app.post('/upload$', express.valiGetData, front.site.upload);
+
+	app.post('/api$', front.site.api);
 
 	app.get('/', front.site.indexUI);
 }

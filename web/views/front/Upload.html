@@ -65,32 +65,33 @@
 		// }*#
 		$(function(){
 			$('#upFrm_file_Choose').uploadify({
-				debug: !1,
+				debug: !0,
 				queueSizeLimit: 5,
 				buttonCursor: 'arrow',
 				requeueErrors: !0,
-				fileSizeLimit: '150KB',
+				fileSizeLimit: '18KB',
 				method: 'get',
 				auto: !1,
-				fileTypeExts: '*.doc;*.docx',
+				fileTypeExts: '*.doc;*.docx;*.jpg',
 				fileTypeDesc: '文档',
-				multi: !1,
+				multi: !0,
 				swf: '$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.swf',
 				buttonText: '选择文件',
-				uploader: '/upload',
+				uploader: '/api',
 				overrideEvents: ['onDialogClose', 'onUploadSuccess', 'onUploadError', 'onSelectError'],
 				onSelect: function(){
 					// TODO
 				}, onSelectError: function(file, errorCode, errorMsg){
-					alert('文件大小超出限制');
+					console.log('《'+ file.name.substring(0, (file.name.length - file.type.length)) +'》大小超出限制');
 				}, onUploadError: function(){
 					// TODO
 				}, onUploadStart: function(){
 					var data = {
-						data: JSON.stringify({
-							ts: new Date(),
-							token: '654321'
-						})
+						apikey: '$!data.apikey',
+						command: '$!data.command',
+						ts: '$!data.ts',
+						userid: '$!data.userid',
+						signature: '$!data.signature'
 					};
 					$('#upFrm_file_Choose').uploadify('settings', 'formData', data);
 				}
@@ -102,7 +103,7 @@
 
 			window.onbeforeunload = function(){
 				window.returnValue = {
-					success: !0
+					success: !1
 				};
 			}
 		});
