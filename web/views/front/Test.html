@@ -6,6 +6,16 @@
 		.container {
 			padding-top: 15px;
 		}
+		#addFrm_ol_uploadfile {
+			font-weight: bold;
+			font-size: 12px;
+		}
+		#addFrm_ol_uploadfile li {
+			margin: 5px 0 5px 0;
+		}
+		#addFrm_ol_uploadfile img {
+			width: 250px;
+		}
 		</style>
 	</head>
 	<body>
@@ -24,6 +34,11 @@
 									</div>
 									<div class='form-group'>
 										<div class='col-sm-offset-1 col-sm-4'>
+											<ol id='addFrm_ol_uploadfile'></ol>
+										</div>
+									</div>
+									<div class='form-group'>
+										<div class='col-sm-offset-1 col-sm-4'>
 											<input type='button' class='btn btn-primary' id='addFrm_btn_ok' value='保 存' />
 										</div>
 									</div>
@@ -38,13 +53,12 @@
 		<script>
 		function openShowModalDialog(window, url, height, width, params){
 			params = params || {};
-
 			height = height || 300;
 			width = width || 500;
 
 			// 最终位置
-			var left = ($(window).width() - width) / 2;
-			var top = ($(window).height() - height) / 2;
+			var left = (window.screen.width - width) / 2;
+			var top = (window.screen.height - height) / 2;
 
 			var param_3 = 'dialogWidth:'+ width +'px;';
 				param_3 += 'dialogHeight:'+ height +'px;';
@@ -59,6 +73,24 @@
 			return result;
 		}
 
+		(function(window){
+			var parent = $('#addFrm_ol_uploadfile').parent().parent();
+			window.showUploadfile = function(show){
+				parent.css('display', !show ? 'none' : 'block');
+			};
+		})(window);
+
+		(function(window){
+			var html = '<% _.each(data, function(item){ %>'+
+						'<li><img src="<%= item.url %>" /></li>'+
+						'<% }) %>';
+			var tpl = _.template(html);
+
+			window.genHtml = function(data){
+				$('#addFrm_ol_uploadfile').html(tpl(data));
+			};
+		})(window);
+
 		$(function(){
 			$('#addFrm_btn_choose').click(function(){
 				var url = '/upload/';
@@ -68,12 +100,21 @@
 					url += '&userid=$!data.apiParams.userid';
 					url += '&signature=$!data.apiParams.signature';
 				var result = openShowModalDialog(window, url, 300, 500, {});
-				console.log(result);
+				if(!result.success){
+					showUploadfile(!1);
+					return;
+				}
+				// TODO
+					showUploadfile(!0);
+				genHtml(result);
 			});
 
 			$('#addFrm_btn_ok').click(function(){
 				// TODO
 			});
+
+			// 隐藏上传文件
+			showUploadfile(!1);
 		});
 		</script>
 	</body>

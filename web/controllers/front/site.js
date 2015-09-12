@@ -10,7 +10,8 @@ var util = require('speedt-utils'),
 
 var formidable = require('formidable');
 
-var conf = require('../../settings');
+var conf = require('../../settings'),
+	rest = require('../../lib/rest');
 
 var fs = require('fs'),
 	path = require('path'),
@@ -66,44 +67,31 @@ exports.uploadUI = function(req, res, next){
 	});
 };
 
-
-(function (exports){
-	/**
-	 * 生成票据
-	 *
-	 * @param
-	 * @return
-	 */
-	function genSignature(data){
-		return '987654321';
-	}
-
-	/**
-	 *
-	 * @param
-	 * @return
-	 */
-	exports.testUI = function(req, res, next){
-		var apiParams = {
-			userid: 'f39bf8f8f0d44ab98c2ff77240aad5e0',
-			apikey: '123456789',
-			command: 'upload',
-			ts: (new Date()).valueOf()
-		};
-		// 生成票据
-		apiParams.signature = genSignature(apiParams);
-
-		res.render('front/Test', {
-			conf: conf,
-			title: '上传测试',
-			description: '',
-			keywords: ',fileServ,html5',
-			data: {
-				apiParams: apiParams
-			}
-		});
+/**
+ *
+ * @param
+ * @return
+ */
+exports.testUI = function(req, res, next){
+	var apiParams = {
+		userid: 'f39bf8f8f0d44ab98c2ff77240aad5e0',
+		apikey: '123456789',
+		command: 'upload',
+		ts: (new Date()).valueOf()
 	};
-})(exports);
+	// 生成票据
+	apiParams.signature = rest.genSignature(apiParams, getSysKey());
+
+	res.render('front/Test', {
+		conf: conf,
+		title: '上传测试',
+		description: '',
+		keywords: ',fileServ,html5',
+		data: {
+			apiParams: apiParams
+		}
+	});
+};
 
 (function (exports){
 
@@ -186,3 +174,13 @@ exports.upload = function(req, res, next){
 		return _uploader;
 	};
 })(exports);
+
+/**
+ * 获取系统Key
+ *
+ * @param
+ * @return
+ */
+function getSysKey(){
+	return 'ABCDEFG';
+}

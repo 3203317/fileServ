@@ -103,7 +103,20 @@
 
 			window.onbeforeunload = function(){
 				window.returnValue = {
-					success: !1
+					success: !0,
+					data: [{
+						name: '',
+						url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img2.jpg',
+						type: '.jpg'
+					}, {
+						name: '',
+						url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img3.jpg',
+						type: '.jpg'
+					}, {
+						name: '',
+						url: 'http://up.2cto.com/2013/0403/20130403022546241.png',
+						type: '.png'
+					}]
 				};
 			}
 		});
