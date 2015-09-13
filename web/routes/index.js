@@ -33,9 +33,8 @@ module.exports = function(app){
 function proc_front(app){
 	app.get('/test/', front.site.testUI);
 
-	app.get('/upload/', front.site.uploadUI);
-
-	app.post('/api$', front.site.api);
+	app.get('/upload/', front.site.signature_validate, front.site.uploadUI);
+	app.post('/api$', front.site.signature_validate, front.site.api);
 
 	app.get('/', front.site.indexUI);
 }

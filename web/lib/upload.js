@@ -22,17 +22,6 @@ var exports = module.exports;
  * @param
  * @return
  */
-exports.genSignature = function(data, seckey){
+exports.genSignature = function(data, key){
 	return '987654321';
-};
-
-/**
- * 验证签名
- *
- * @param
- * @return
- */
-exports.validate = function(data, seckey){
-	// TODO
-	return !0;
 };

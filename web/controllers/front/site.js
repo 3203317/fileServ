@@ -20,7 +20,7 @@ var fs = require('fs'),
 	velocity = require('velocityjs');
 
 var biz = {
-	// TODO
+	user: require('../../biz/user')
 };
 
 var exports = module.exports;
@@ -49,8 +49,16 @@ exports.uploadUI = function(req, res, next){
 	var query = req.query;
 
 	if('upload' !== query.command){
-		return next(new Error('参数异常'));
+		return res.redirect('/user/login?refererUrl='+ req.url);
 	}
+
+	var apiParams = {
+		userid: query.userid,
+		apikey: query.apikey,
+		command: query.command,
+		ts: query.ts,
+		signature: query.signature
+	};
 
 	res.render('front/Upload', {
 		conf: conf,
@@ -58,11 +66,7 @@ exports.uploadUI = function(req, res, next){
 		description: '',
 		keywords: ',fileServ,html5',
 		data: {
-			userid: query.userid,
-			apikey: query.apikey,
-			command: query.command,
-			ts: query.ts,
-			signature: query.signature
+			apiParams: apiParams
 		}
 	});
 };
@@ -80,7 +84,7 @@ exports.testUI = function(req, res, next){
 		ts: (new Date()).valueOf()
 	};
 	// 生成票据
-	apiParams.signature = rest.genSignature(apiParams, getSysKey());
+	apiParams.signature = rest.genSignature(apiParams, getSecKey());
 
 	res.render('front/Test', {
 		conf: conf,
@@ -93,31 +97,38 @@ exports.testUI = function(req, res, next){
 	});
 };
 
-(function (exports){
+/**
+ * 签名验证
+ *
+ * @param
+ * @return
+ */
+exports.signature_validate = function(req, res, next){
+	var query = req.query;
+	var apiParams = {
+		userid: query.userid,
+		apikey: query.apikey,
+		command: query.command,
+		ts: query.ts,
+		signature: query.signature
+	};
+	biz.user.findByApiKey(apiParams.apikey, function(err, doc){
+		if(err) return next(err);
+		// 没有找到该用户
+		if(!doc){
+			if(req.xhr) return res.send({ success: false, msg: 'Not Found.' });
+			return res.redirect('/user/login?refererUrl='+ req.url);
+		}
+		// 签名验证
+		if(rest.validate(apiParams, doc.seckey)) return next();
+		if(req.xhr) return res.send({ success: false, msg: '签名验证失败' });
+		res.redirect('/user/login?refererUrl='+ req.url);
+	});
+};
 
+(function(exports){
 	/**
-	 * 参数验证
-	 *
-	 * @param
-	 * @return
-	 */
-	function validate(){
-		// TODO
-	}
-
-	/**
-	 * 处理上传
-	 *
-	 * @param
-	 * @return
-	 */
-	function procUpload(req, res, next){
-		var result = { success: false };
-		result.success = true;
-		res.send(result);
-	}
-
-	/**
+	 * api
 	 *
 	 * @param
 	 * @return
@@ -125,10 +136,9 @@ exports.testUI = function(req, res, next){
 	exports.api = function(req, res, next){
 		var result = { success: false },
 			query = req.query;
-
+		// TODO
 		switch(query.command){
 			case 'upload':
-				procUpload(req, res, next);
 				break;
 			default:
 				res.send(result);
@@ -136,24 +146,6 @@ exports.testUI = function(req, res, next){
 		}
 	};
 })(exports);
-
-/**
- *
- * @param
- * @return
- */
-exports.upload = function(req, res, next){
-	var result = { success: false },
-		data = req._data;
-
-	exports.getUploader().parse(req, function (err, fields, files){
-		if(err) return next(err);
-
-		result.msg = '上传成功';
-		result.data = data;
-		res.send(result);
-	});
-};
 
 (function(exports){
 	var _uploader = null;
@@ -165,7 +157,7 @@ exports.upload = function(req, res, next){
 	 */
 	exports.getUploader = function(){
 		if(!!_uploader) return _uploader;
-
+		// TODO
 		var _uploader = new formidable.IncomingForm();  // 创建上传表单
 		_uploader.encoding = 'utf-8';  // 设置编辑
 		_uploader.uploadDir = path.join(cwd, 'public', 'files');  // 设置上传目录
@@ -181,6 +173,6 @@ exports.upload = function(req, res, next){
  * @param
  * @return
  */
-function getSysKey(){
-	return 'ABCDEFG';
+function getSecKey(){
+	return 'ABCDEFGHI';
 }

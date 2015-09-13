@@ -14,7 +14,7 @@
 			margin: 5px 0 5px 0;
 		}
 		#addFrm_ol_uploadfile img {
-			width: 250px;
+			width: 200px;
 		}
 		</style>
 	</head>
@@ -73,45 +73,42 @@
 			return result;
 		}
 
-		(function(window){
-			var parent = $('#addFrm_ol_uploadfile').parent().parent();
-			window.showUploadfile = function(show){
-				parent.css('display', !show ? 'none' : 'block');
-			};
-		})(window);
-
-		(function(window){
-			var html = '<% _.each(data, function(item){ %>'+
-						'<li><img src="<%= item.url %>" /></li>'+
-						'<% }) %>';
-			var tpl = _.template(html);
-
-			window.genHtml = function(data){
-				$('#addFrm_ol_uploadfile').html(tpl(data));
-			};
-		})(window);
-
 		$(function(){
+			var url = '/upload/';
+				url += '?apikey=$!data.apiParams.apikey';
+				url += '&command=$!data.apiParams.command';
+				url += '&ts=$!data.apiParams.ts';
+				url += '&userid=$!data.apiParams.userid';
+				url += '&signature=$!data.apiParams.signature';
+
 			$('#addFrm_btn_choose').click(function(){
-				var url = '/upload/';
-					url += '?apikey=$!data.apiParams.apikey';
-					url += '&command=$!data.apiParams.command';
-					url += '&ts=$!data.apiParams.ts';
-					url += '&userid=$!data.apiParams.userid';
-					url += '&signature=$!data.apiParams.signature';
 				var result = openShowModalDialog(window, url, 300, 500, {});
 				if(!result.success){
-					showUploadfile(!1);
-					return;
+					return showUploadfile(!1);
 				}
 				// TODO
-					showUploadfile(!0);
+				showUploadfile(!0);
 				genHtml(result);
 			});
 
 			$('#addFrm_btn_ok').click(function(){
 				// TODO
 			});
+
+			// 隐藏上传文件
+			var parent = $('#addFrm_ol_uploadfile').parent().parent();
+			function showUploadfile(show){
+				parent.css('display', !show ? 'none' : 'block');
+			};
+
+			// 生成HTML
+			var html = '<% _.each(data, function(item){ %>'+
+						'<li><img src="<%= item.url %>" /></li>'+
+						'<% }) %>';
+			var tpl = _.template(html);
+			function genHtml(data){
+				$('#addFrm_ol_uploadfile').html(tpl(data));
+			};
 
 			// 隐藏上传文件
 			showUploadfile(!1);

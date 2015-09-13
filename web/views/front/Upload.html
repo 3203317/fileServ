@@ -64,16 +64,24 @@
 		// 	}
 		// }*#
 		$(function(){
+			var apiParams = {
+				apikey: '$!data.apiParams.apikey',
+				command: '$!data.apiParams.command',
+				ts: '$!data.apiParams.ts',
+				userid: '$!data.apiParams.userid',
+				signature: '$!data.apiParams.signature'
+			};
+
 			$('#upFrm_file_Choose').uploadify({
 				debug: !0,
 				queueSizeLimit: 5,
 				buttonCursor: 'arrow',
 				requeueErrors: !0,
-				fileSizeLimit: '18KB',
+				fileSizeLimit: '10KB',
 				method: 'get',
 				auto: !1,
 				fileTypeExts: '*.doc;*.docx;*.jpg',
-				fileTypeDesc: '文档',
+				fileTypeDesc: '图片',
 				multi: !0,
 				swf: '$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.swf',
 				buttonText: '选择文件',
@@ -82,44 +90,36 @@
 				onSelect: function(){
 					// TODO
 				}, onSelectError: function(file, errorCode, errorMsg){
-					console.log('《'+ file.name.substring(0, (file.name.length - file.type.length)) +'》大小超出限制');
+					alert('《'+ file.name.substring(0, (file.name.length - file.type.length)) +'》的大小超出限制');
 				}, onUploadError: function(){
 					// TODO
 				}, onUploadStart: function(){
-					var data = {
-						apikey: '$!data.apikey',
-						command: '$!data.command',
-						ts: '$!data.ts',
-						userid: '$!data.userid',
-						signature: '$!data.signature'
-					};
-					$('#upFrm_file_Choose').uploadify('settings', 'formData', data);
+					$('#upFrm_file_Choose').uploadify('settings', 'formData', apiParams);
+				}, onUploadSuccess: function(file, data, response){
+					if(!response) return;
+					var obj = JSON.parse(data);
+					if(!obj.success) return;
+					// TODO
+					returnData.push({
+						name: '',
+						url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img2.jpg',
+						type: '.jpg'
+					});
 				}
 			});
 
 			$('#upFrm_btn_upload').click(function(){
 				$('#upFrm_file_Choose').uploadify('upload', '*');
 			});
-
-			window.onbeforeunload = function(){
-				window.returnValue = {
-					success: !0,
-					data: [{
-						name: '',
-						url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img2.jpg',
-						type: '.jpg'
-					}, {
-						name: '',
-						url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img3.jpg',
-						type: '.jpg'
-					}, {
-						name: '',
-						url: 'http://up.2cto.com/2013/0403/20130403022546241.png',
-						type: '.png'
-					}]
-				};
-			}
 		});
+		// TODO
+		var returnData = [];
+		window.onbeforeunload = function(){
+			window.returnValue = {
+				success: !0,
+				data: returnData
+			};
+		};
 		</script>
 	</body>
 </html>
