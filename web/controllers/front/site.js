@@ -20,6 +20,7 @@ var fs = require('fs'),
 	velocity = require('velocityjs');
 
 var proxy = {
+	upload: require('../../biz/upload'),
 	user: require('../../biz/user')
 };
 
@@ -118,6 +119,40 @@ exports.signature_validate = function(req, res, next){
 };
 
 (function (exports){
+	var _uploaders = [];
+
+	/**
+	 * 获取上传对象
+	 *
+	 * @param
+	 * @return
+	 */
+	function getUploader(user){
+		var uploader = _uploaders[user.id];
+		if(!!uploader) return uploader;
+		// 找不到就创建
+		uploader = new formidable.IncomingForm();  // 创建上传表单
+		uploader.encoding = 'utf-8';  // 设置编辑
+		uploader.uploadDir = path.join(cwd, 'public', 'files', '_tmp');  // 设置上传目录
+		uploader.keepExtensions = !0;  // 保留后缀
+		uploader.maxFieldsSize = 1024 * user.MAX_UPLOAD_SIZE;  // 文件大小
+		// 写入数组
+		_uploaders[user.id] = uploader;
+		return uploader;
+	}
+
+	/**
+	 * 获取文件后缀
+	 *
+	 * @param
+	 * @return
+	 */
+	function getFileSuffix(filename){
+		filename = filename.toLowerCase();
+		var idx = filename.lastIndexOf('.');
+		return filename.substring(idx, filename.length);
+	}
+
 	/**
 	 * 上传组件
 	 *
@@ -126,13 +161,35 @@ exports.signature_validate = function(req, res, next){
 	 */
 	function uploader(req, user, cb){
 		var result = { success: false };
-		result.success = true;
-		result.data = {
-			name: '',
-			url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img2.jpg',
-			type: '.jpg'
-		};
-		cb(null, result);
+		// 获取上传对象
+		var uploader = getUploader(user);
+		// 准备上传
+		uploader.parse(req, function (err, fields, files){
+			if(err) return cb(err);
+
+			proxy.upload.saveNew({}, function (err, doc){
+				if(err){
+					// 删除已上传的文件
+					// TODO
+					return cb(err);
+				}
+				// 后缀
+				var suffix = getFileSuffix(fields.Filename)
+				// 文件名+后缀
+				var filename = util.uuid() + suffix;
+				// 重命名
+				fs.renameSync(files.Filedata.path, path.join(cwd, 'public', 'files', user.id, filename));
+
+				// 返回值
+				result.data = {
+					name: '',
+					url: 'http://127.0.0.1:3013/public/files/'+ user.id +'/'+ filename,
+					type: suffix
+				};
+				result.success = true;
+				cb(null, result);
+			});
+		});
 	}
 
 	/**
@@ -187,26 +244,6 @@ exports.signature_validate = function(req, res, next){
 				res.send({ success: false });
 				break;
 		}
-	};
-})(exports);
-
-(function (exports){
-	var _uploader = null;
-	/**
-	 * 上传组件
-	 *
-	 * @param
-	 * @return
-	 */
-	exports.getUploader = function(){
-		if(!!_uploader) return _uploader;
-		// TODO
-		var _uploader = new formidable.IncomingForm();  // 创建上传表单
-		_uploader.encoding = 'utf-8';  // 设置编辑
-		_uploader.uploadDir = path.join(cwd, 'public', 'files');  // 设置上传目录
-		_uploader.keepExtensions = !0;  // 保留后缀
-		_uploader.maxFieldsSize = 2 * 1024 * 1024;  // 文件大小
-		return _uploader;
 	};
 })(exports);
 
