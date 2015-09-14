@@ -52,6 +52,9 @@ exports.uploadUI = function(req, res, next){
 		return res.redirect('/user/login?refererUrl='+ req.url);
 	}
 
+	var user = req.flash('user')[0];
+	if(!user) return res.redirect('/user/login?refererUrl='+ req.url);
+
 	var apiParams = {
 		userid: query.userid,
 		apikey: query.apikey,
@@ -66,6 +69,7 @@ exports.uploadUI = function(req, res, next){
 		description: '',
 		keywords: ',fileServ,html5',
 		data: {
+			user: user,
 			apiParams: apiParams
 		}
 	});
@@ -106,26 +110,10 @@ exports.testUI = function(req, res, next){
 exports.signature_validate = function(req, res, next){
 	var query = req.query;
 	// TODO
-	var curTime = (new Date()).valueOf();
-	if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
-		return res.send({ success: false, msg: '签名已失效' });
-	}
-	// TODO
-	var apiParams = {
-		userid: query.userid,
-		apikey: query.apikey,
-		command: query.command,
-		ts: query.ts,
-		signature: query.signature
-	};
-	// TODO
-	proxy.user.findByApiKey(apiParams.apikey, function (err, doc){
+	proxy.user.findByApiKey(query.apikey, function (err, doc){
 		if(err) return next(err);
-		// 没有找到该用户
-		if(!doc) return res.send({ success: false, msg: 'Not Found.' });
-		// 签名验证
-		if(rest.validate(apiParams, doc.seckey)) return next();
-		res.send({ success: false, msg: '签名验证失败' });
+		req.flash('user', doc);
+		next();
 	});
 };
 
@@ -136,7 +124,7 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	function uploader(req, cb){
+	function uploader(req, user, cb){
 		var result = { success: false };
 		result.success = true;
 		result.data = {
@@ -153,8 +141,8 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	function upload(req, cb){
-		uploader(req, function (err, result){
+	function upload(req, user, cb){
+		uploader(req, user, function (err, result){
 			if(err) return cb(err);
 			cb(null, result);
 		});
@@ -169,9 +157,28 @@ exports.signature_validate = function(req, res, next){
 	exports.api = function(req, res, next){
 		var query = req.query;
 		// TODO
+		var curTime = (new Date()).valueOf();
+		if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
+			return res.send({ success: false, msg: '签名已失效' });
+		}
+		// TODO
+		var user = req.flash('user')[0];
+		if(!user) return res.send({ success: false, msg: 'Not Found.' });
+		// TODO
+		var apiParams = {
+			userid: query.userid,
+			apikey: query.apikey,
+			command: query.command,
+			ts: query.ts,
+			signature: query.signature
+		};
+		if(!rest.validate(apiParams, user.SECKEY)){
+			return res.send({ success: false, msg: '签名验证失败' });
+		}
+		// TODO
 		switch(query.command){
 			case 'upload':
-				upload(req, function (err, result){
+				upload(req, user, function (err, result){
 					if(err) return next(err);
 					res.send(result);
 				});
