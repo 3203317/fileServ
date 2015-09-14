@@ -78,7 +78,7 @@ exports.uploadUI = function(req, res, next){
  */
 exports.testUI = function(req, res, next){
 	var apiParams = {
-		userid: 'f39bf8f8f0d44ab98c2ff77240aad5e0',
+		userid: '6eb3e005b155437283fc4968840f59f1',
 		apikey: '123456789',
 		command: 'upload',
 		ts: (new Date()).valueOf()
@@ -126,7 +126,24 @@ exports.signature_validate = function(req, res, next){
 	});
 };
 
-(function(exports){
+(function (exports){
+	/**
+	 * 上传
+	 *
+	 * @param
+	 * @return
+	 */
+	function upload(req, cb){
+		var result = { success: false };
+		result.success = true;
+		result.data = {
+			name: '',
+			url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img2.jpg',
+			type: '.jpg'
+		};
+		cb(null, result);
+	}
+
 	/**
 	 * api
 	 *
@@ -134,20 +151,23 @@ exports.signature_validate = function(req, res, next){
 	 * @return
 	 */
 	exports.api = function(req, res, next){
-		var result = { success: false },
-			query = req.query;
+		var query = req.query;
 		// TODO
 		switch(query.command){
 			case 'upload':
+				upload(req, function (err, result){
+					if(err) return next(err);
+					res.send(result);
+				});
 				break;
 			default:
-				res.send(result);
+				res.send({ success: false });
 				break;
 		}
 	};
 })(exports);
 
-(function(exports){
+(function (exports){
 	var _uploader = null;
 	/**
 	 * 上传组件

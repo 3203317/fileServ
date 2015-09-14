@@ -15,13 +15,3 @@ var exports = module.exports;
 (function (exports){
 	// TODO
 })(exports);
-
-/**
- * 生成签名
- *
- * @param
- * @return
- */
-exports.genSignature = function(data, key){
-	return '987654321';
-};

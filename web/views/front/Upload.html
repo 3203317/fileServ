@@ -73,7 +73,7 @@
 			};
 
 			$('#upFrm_file_Choose').uploadify({
-				debug: !0,
+				debug: !1,
 				queueSizeLimit: 5,
 				buttonCursor: 'arrow',
 				requeueErrors: !0,
@@ -100,11 +100,7 @@
 					var obj = JSON.parse(data);
 					if(!obj.success) return;
 					// TODO
-					returnData.push({
-						name: '',
-						url: 'http://127.0.0.1:3013/public/files/201503/1/201508/img2.jpg',
-						type: '.jpg'
-					});
+					returnData.push(obj.data);
 				}
 			});
 
