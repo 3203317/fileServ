@@ -174,7 +174,7 @@ exports.signature_validate = function(req, res, next){
 					return cb(err);
 				}
 				// 后缀
-				var suffix = getFileSuffix(fields.Filename)
+				var suffix = getFileSuffix(fields.Filename);
 				// 文件名+后缀
 				var filename = util.uuid() + suffix;
 				// 重命名
