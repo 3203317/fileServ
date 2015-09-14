@@ -16,7 +16,7 @@ var md5 = require('speedt-utils').md5;
 exports.findByApiKey = function(apikey, cb){
 	var doc = {
 		id: '6eb3e005b155437283fc4968840f59f1',
-		MAX_UPLOAD_SIZE: 10,  // KB
+		MAX_UPLOAD_SIZE: 20,  // KB
 		APIKEY: '123456789',
 		SECKEY: 'ABCDEFGHI'
 	};

@@ -178,16 +178,17 @@ exports.signature_validate = function(req, res, next){
 				// 文件名+后缀
 				var filename = util.uuid() + suffix;
 				// 重命名
-				fs.renameSync(files.Filedata.path, path.join(cwd, 'public', 'files', user.id, filename));
-
-				// 返回值
-				result.data = {
-					name: '',
-					url: 'http://127.0.0.1:3013/public/files/'+ user.id +'/'+ filename,
-					type: suffix
-				};
-				result.success = true;
-				cb(null, result);
+				fs.rename(files.Filedata.path, path.join(cwd, 'public', 'files', user.id, filename), function (err){
+					if(err) return cb(err);
+					// 返回值
+					result.data = {
+						name: '',
+						url: 'http://127.0.0.1:3013/public/files/'+ user.id +'/'+ filename,
+						type: suffix
+					};
+					result.success = true;
+					cb(null, result);
+				});
 			});
 		});
 	}
