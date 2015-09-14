@@ -83,6 +83,7 @@
 
 			$('#addFrm_btn_choose').click(function(){
 				var result = openShowModalDialog(window, url, 300, 500, {});
+				if(!result) return showUploadfile(!1);
 				if(!result.success) return showUploadfile(!1);
 				// TODO
 				genHtml(result);

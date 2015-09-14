@@ -86,11 +86,9 @@
 				swf: '$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.swf',
 				buttonText: '选择文件',
 				uploader: '/api',
-				overrideEvents: ['onDialogClose', 'onUploadSuccess', 'onUploadError', 'onSelectError'],
+				overrideEvents: ['onDialogClose', 'onUploadSuccess', 'onUploadError'],
 				onSelect: function(){
 					// TODO
-				}, onSelectError: function(file, errorCode, errorMsg){
-					alert('《'+ file.name.substring(0, (file.name.length - file.type.length)) +'》的大小超出限制');
 				}, onUploadError: function(){
 					// TODO
 				}, onUploadStart: function(){

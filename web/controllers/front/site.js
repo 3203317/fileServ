@@ -105,6 +105,13 @@ exports.testUI = function(req, res, next){
  */
 exports.signature_validate = function(req, res, next){
 	var query = req.query;
+	// TODO
+	var curTime = (new Date()).valueOf();
+	if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
+		if(req.xhr) return res.send({ success: false, msg: '签名已失效' });
+		return res.redirect('/user/login?refererUrl='+ req.url);
+	}
+	// TODO
 	var apiParams = {
 		userid: query.userid,
 		apikey: query.apikey,
@@ -112,6 +119,7 @@ exports.signature_validate = function(req, res, next){
 		ts: query.ts,
 		signature: query.signature
 	};
+	// TODO
 	biz.user.findByApiKey(apiParams.apikey, function(err, doc){
 		if(err) return next(err);
 		// 没有找到该用户
