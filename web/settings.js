@@ -24,7 +24,7 @@ module.exports = {
 		static_res: '/public/',
 		external_res: 'http://www.foreworld.net/public/',
 		pagesize: 10,
-		sign_ts: 1000 * 60,
+		sign_ts: 1000 * 10,
 		cache_time: 1000 * 3
 	}, mail: {
 		secureConnection: true,

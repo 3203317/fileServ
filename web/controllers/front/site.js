@@ -19,7 +19,7 @@ var fs = require('fs'),
 	qs = require('querystring'),
 	velocity = require('velocityjs');
 
-var biz = {
+var proxy = {
 	user: require('../../biz/user')
 };
 
@@ -108,8 +108,7 @@ exports.signature_validate = function(req, res, next){
 	// TODO
 	var curTime = (new Date()).valueOf();
 	if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
-		if(req.xhr) return res.send({ success: false, msg: '签名已失效' });
-		return res.redirect('/user/login?refererUrl='+ req.url);
+		return res.send({ success: false, msg: '签名已失效' });
 	}
 	// TODO
 	var apiParams = {
@@ -120,28 +119,24 @@ exports.signature_validate = function(req, res, next){
 		signature: query.signature
 	};
 	// TODO
-	biz.user.findByApiKey(apiParams.apikey, function(err, doc){
+	proxy.user.findByApiKey(apiParams.apikey, function (err, doc){
 		if(err) return next(err);
 		// 没有找到该用户
-		if(!doc){
-			if(req.xhr) return res.send({ success: false, msg: 'Not Found.' });
-			return res.redirect('/user/login?refererUrl='+ req.url);
-		}
+		if(!doc) return res.send({ success: false, msg: 'Not Found.' });
 		// 签名验证
 		if(rest.validate(apiParams, doc.seckey)) return next();
-		if(req.xhr) return res.send({ success: false, msg: '签名验证失败' });
-		res.redirect('/user/login?refererUrl='+ req.url);
+		res.send({ success: false, msg: '签名验证失败' });
 	});
 };
 
 (function (exports){
 	/**
-	 * 上传
+	 * 上传组件
 	 *
 	 * @param
 	 * @return
 	 */
-	function upload(req, cb){
+	function uploader(req, cb){
 		var result = { success: false };
 		result.success = true;
 		result.data = {
@@ -150,6 +145,19 @@ exports.signature_validate = function(req, res, next){
 			type: '.jpg'
 		};
 		cb(null, result);
+	}
+
+	/**
+	 * 上传
+	 *
+	 * @param
+	 * @return
+	 */
+	function upload(req, cb){
+		uploader(req, function (err, result){
+			if(err) return cb(err);
+			cb(null, result);
+		});
 	}
 
 	/**

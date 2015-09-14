@@ -86,7 +86,7 @@
 				swf: '$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.swf',
 				buttonText: '选择文件',
 				uploader: '/api',
-				overrideEvents: ['onDialogClose', 'onUploadSuccess', 'onUploadError'],
+				overrideEvents: ['onUploadSuccess'],
 				onSelect: function(){
 					// TODO
 				}, onUploadError: function(){
@@ -96,7 +96,9 @@
 				}, onUploadSuccess: function(file, data, response){
 					if(!response) return;
 					var obj = JSON.parse(data);
-					if(!obj.success) return;
+					if(!obj.success){
+						return alert(obj.msg);
+					}
 					// TODO
 					returnData.push(obj.data);
 				}
