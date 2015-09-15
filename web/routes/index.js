@@ -36,6 +36,7 @@ function proc_front(app){
 	app.get('/upload/', front.site.signature_validate, front.site.uploadUI);
 	app.post('/api$', front.site.signature_validate, front.site.api);
 
+	app.get('/user/login$', front.site.loginUI);
 	app.get('/', front.site.indexUI);
 }
 

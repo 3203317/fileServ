@@ -52,9 +52,8 @@ exports.uploadUI = function(req, res, next){
 	if('upload' !== query.command){
 		return res.redirect('/user/login?refererUrl='+ req.url);
 	}
-
+	// TODO
 	var user = req.flash('user')[0];
-	if(!user) return res.redirect('/user/login?refererUrl='+ req.url);
 
 	var apiParams = {
 		userid: query.userid,
@@ -93,7 +92,7 @@ exports.testUI = function(req, res, next){
 
 	res.render('front/Test', {
 		conf: conf,
-		title: '上传测试',
+		title: '上传测试 | '+ conf.corp.name,
 		description: '',
 		keywords: ',fileServ,html5',
 		data: {
@@ -110,11 +109,26 @@ exports.testUI = function(req, res, next){
  */
 exports.signature_validate = function(req, res, next){
 	var query = req.query;
+	var curTime = (new Date()).valueOf();
+	if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
+		if(req.xhr) return res.send({ success: false, msg: '签名已失效' });
+		return res.redirect('/user/login?refererUrl='+ req.url);
+	}
 	// TODO
 	proxy.user.findByApiKey(query.apikey, function (err, doc){
 		if(err) return next(err);
-		req.flash('user', doc);
-		next();
+		// TODO
+		if(!doc){
+			if(req.xhr) return res.send({ success: false, msg: 'Not Found.' });
+			return res.redirect('/user/login?refererUrl='+ req.url);
+		}
+		// TODO
+		if(rest.validate(query, doc.SECKEY)){
+			req.flash('user', doc);
+			return next();
+		}
+		if(req.xhr) return res.send({ success: false, msg: '签名验证失败' });
+		res.redirect('/user/login?refererUrl='+ req.url);
 	});
 };
 
@@ -148,9 +162,9 @@ exports.signature_validate = function(req, res, next){
 	 * @return
 	 */
 	function getFileSuffix(filename){
-		filename = filename.toLowerCase();
 		var idx = filename.lastIndexOf('.');
-		return filename.substring(idx, filename.length);
+		var suffix = filename.substring(idx, filename.length);
+		return suffix.toLowerCase();
 	}
 
 	/**
@@ -159,14 +173,16 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	function uploader(req, user, cb){
+	function uploader(req, cb){
 		var result = { success: false };
+		// TODO
+		var user = req.flash('user')[0];
 		// 获取上传对象
 		var uploader = getUploader(user);
 		// 准备上传
 		uploader.parse(req, function (err, fields, files){
 			if(err) return cb(err);
-
+			// TODO
 			proxy.upload.saveNew({}, function (err, doc){
 				if(err){
 					// 删除已上传的文件
@@ -199,8 +215,8 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	function upload(req, user, cb){
-		uploader(req, user, function (err, result){
+	function upload(req, cb){
+		uploader(req, function (err, result){
 			if(err) return cb(err);
 			cb(null, result);
 		});
@@ -215,28 +231,9 @@ exports.signature_validate = function(req, res, next){
 	exports.api = function(req, res, next){
 		var query = req.query;
 		// TODO
-		var curTime = (new Date()).valueOf();
-		if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
-			return res.send({ success: false, msg: '签名已失效' });
-		}
-		// TODO
-		var user = req.flash('user')[0];
-		if(!user) return res.send({ success: false, msg: 'Not Found.' });
-		// TODO
-		var apiParams = {
-			userid: query.userid,
-			apikey: query.apikey,
-			command: query.command,
-			ts: query.ts,
-			signature: query.signature
-		};
-		if(!rest.validate(apiParams, user.SECKEY)){
-			return res.send({ success: false, msg: '签名验证失败' });
-		}
-		// TODO
 		switch(query.command){
 			case 'upload':
-				upload(req, user, function (err, result){
+				upload(req, function (err, result){
 					if(err) return next(err);
 					res.send(result);
 				});
@@ -247,6 +244,21 @@ exports.signature_validate = function(req, res, next){
 		}
 	};
 })(exports);
+
+/**
+ *
+ * @params
+ * @return
+ */
+exports.loginUI = function(req, res, next){
+	res.render('front/Login', {
+		conf: conf,
+		title: '用户登陆 | '+ conf.corp.name,
+		description: '',
+		keywords: ',fileServ,html5',
+		refererUrl: escape(req.url)
+	});
+};
 
 /**
  * 获取系统Key

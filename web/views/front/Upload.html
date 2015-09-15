@@ -80,17 +80,17 @@
 				fileSizeLimit: $!data.user.MAX_UPLOAD_SIZE,
 				method: 'get',
 				auto: !1,
-				fileTypeExts: '*.doc;*.docx;*.jpg',
+				fileTypeExts: '*.png;*.jpg',
 				fileTypeDesc: '图片',
 				multi: !0,
 				swf: '$!{conf.html.static_res}assets/js/uploadify/3.2.1/uploadify.swf',
 				buttonText: '选择文件',
 				uploader: '/api',
-				overrideEvents: ['onUploadSuccess'],
+				overrideEvents: ['onUploadSuccess', 'onUploadError'],
 				onSelect: function(){
 					// TODO
-				}, onUploadError: function(){
-					// TODO
+				}, onUploadError: function(file, errorCode, errorMsg, errorString){
+					if('302' === errorMsg) return location.href='/user/login?refererUrl=';
 				}, onUploadStart: function(){
 					$('#upFrm_file_Choose').uploadify('settings', 'formData', apiParams);
 				}, onUploadSuccess: function(file, data, response){
