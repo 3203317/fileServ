@@ -110,7 +110,7 @@ exports.testUI = function(req, res, next){
 exports.signature_validate = function(req, res, next){
 	var query = req.query;
 	var curTime = (new Date()).valueOf();
-	if(!((curTime - conf.html.sign_ts) < query.ts && query.ts < (curTime + conf.html.sign_ts))){
+	if(!((curTime - conf.upload.sign_ts) < query.ts && query.ts < (curTime + conf.upload.sign_ts))){
 		if(req.xhr) return res.send({ success: false, msg: '签名已失效' });
 		return res.redirect('/user/login?refererUrl='+ req.url);
 	}
@@ -142,7 +142,7 @@ exports.signature_validate = function(req, res, next){
 	function getUploader(user){
 		var uploader = new formidable.IncomingForm();  // 创建上传表单
 		uploader.encoding = 'utf-8';  // 设置编辑
-		uploader.uploadDir = path.join(cwd, 'public', 'files', '_tmp');  // 设置上传目录
+		uploader.uploadDir = path.join(conf.upload.save, '_tmp');  // 设置上传目录
 		uploader.keepExtensions = !0;  // 保留后缀
 		uploader.maxFieldsSize = 1024 * user.MAX_UPLOAD_SIZE;  // 文件大小
 		return uploader;
@@ -194,18 +194,18 @@ exports.signature_validate = function(req, res, next){
 					return cb(err);
 				}
 				// 检测目录是否存在
-				fs.exists(path.join(cwd, 'public', 'files', user.id, folder), function (exists){
+				fs.exists(path.join(conf.upload.save, user.id, folder), function (exists){
 					if(!exists){
-						var model = fs.mkdirSync(path.join(cwd, 'public', 'files', user.id, folder), 777);
+						var model = fs.mkdirSync(path.join(conf.upload.save, user.id, folder), 777);
 						if(model) return cb(new Error(model));
 					}
 					// 重命名
-					fs.rename(files.Filedata.path, path.join(cwd, 'public', 'files', user.id, folder, filename), function (err){
+					fs.rename(files.Filedata.path, path.join(conf.upload.save, user.id, folder, filename), function (err){
 						if(err) return cb(err);
 						// 返回值
 						result.data = {
 							name: '',
-							url: 'http://127.0.0.1:3013/public/files/'+ user.id +'/'+ folder +'/'+ filename,
+							url: conf.upload.http + user.id +'/'+ folder +'/'+ filename,
 							type: suffix
 						};
 						result.success = true;

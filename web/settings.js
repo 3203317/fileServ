@@ -5,6 +5,9 @@
  */
 'use strict';
 
+var path = require('path'),
+	cwd = process.cwd();
+
 module.exports = {
 	cookie: {
 		secret: 'foreworld-fileServ'
@@ -24,7 +27,6 @@ module.exports = {
 		static_res: '/public/',
 		external_res: 'http://www.foreworld.net/public/',
 		pagesize: 10,
-		sign_ts: 1000 * 60,
 		cache_time: 1000 * 3
 	}, mail: {
 		secureConnection: true,
@@ -35,5 +37,9 @@ module.exports = {
 			user: 'firefrog@163.com',
 			pass: ''
 		}
+	}, upload: {
+		sign_ts: 1000 * 60,
+		http: 'http://127.0.0.1:3013/public/files/',
+		save: path.join(cwd, '..', 'asset')
 	}
 };
