@@ -175,24 +175,29 @@ exports.signature_validate = function(req, res, next){
 		// 准备上传
 		uploader.parse(req, function (err, fields, files){
 			if(err) return cb(err);
+			// 后缀
+			var suffix = getFileSuffix(fields.Filename);
+			// 文件名+后缀
+			var filename = util.uuid() + suffix;
+			// 目录
+			var folder = util.format(new Date(), 'YYMMdd');
 			// TODO
-			proxy.upload.saveNew({}, function (err, doc){
+			proxy.upload.saveNew({
+				tenantid: user.id,
+				userid: req.query.userid,
+				filename: filename,
+				url: folder +'/'+ filename
+			}, function (err, doc){
 				if(err){
 					// 删除已上传的文件
 					// TODO
 					return cb(err);
 				}
-				// 后缀
-				var suffix = getFileSuffix(fields.Filename);
-				// 文件名+后缀
-				var filename = util.uuid() + suffix;
-				// 目录
-				var folder = util.format(new Date(), 'YYMMdd');
 				// 检测目录是否存在
 				fs.exists(path.join(cwd, 'public', 'files', user.id, folder), function (exists){
 					if(!exists){
 						var model = fs.mkdirSync(path.join(cwd, 'public', 'files', user.id, folder), 777);
-						if(model) return cb(null, result);
+						if(model) return cb(new Error(model));
 					}
 					// 重命名
 					fs.rename(files.Filedata.path, path.join(cwd, 'public', 'files', user.id, folder, filename), function (err){
