@@ -39,7 +39,7 @@ module.exports = {
 		}
 	}, upload: {
 		sign_ts: 1000 * 60,
-		http: 'http://127.0.0.1:3013/public/files/',
-		save: path.join(cwd, '..', 'asset')
+		http: 'http://127.0.0.1/asset/public/',
+		save: path.join(cwd, '..', 'asset', 'public')
 	}
 };

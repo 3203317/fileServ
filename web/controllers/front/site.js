@@ -50,7 +50,7 @@ exports.uploadUI = function(req, res, next){
 	var query = req.query;
 
 	if('upload' !== query.command){
-		return res.redirect('/user/login?refererUrl='+ req.url);
+		return res.redirect('/user/login?refererUrl='+ escape(req.url));
 	}
 	// TODO
 	var user = req.flash('user')[0];
@@ -112,7 +112,7 @@ exports.signature_validate = function(req, res, next){
 	var curTime = (new Date()).valueOf();
 	if(!((curTime - conf.upload.sign_ts) < query.ts && query.ts < (curTime + conf.upload.sign_ts))){
 		if(req.xhr) return res.send({ success: false, msg: '签名已失效' });
-		return res.redirect('/user/login?refererUrl='+ req.url);
+		return res.redirect('/user/login?refererUrl='+ escape(req.url));
 	}
 	// TODO
 	proxy.user.findByApiKey(query.apikey, function (err, doc){
@@ -120,7 +120,7 @@ exports.signature_validate = function(req, res, next){
 		// TODO
 		if(!doc){
 			if(req.xhr) return res.send({ success: false, msg: 'Not Found.' });
-			return res.redirect('/user/login?refererUrl='+ req.url);
+			return res.redirect('/user/login?refererUrl='+ escape(req.url));
 		}
 		// TODO
 		if(rest.validate(query, doc.SECKEY)){
@@ -128,7 +128,7 @@ exports.signature_validate = function(req, res, next){
 			return next();
 		}
 		if(req.xhr) return res.send({ success: false, msg: '签名验证失败' });
-		res.redirect('/user/login?refererUrl='+ req.url);
+		res.redirect('/user/login?refererUrl='+ escape(req.url));
 	});
 };
 
@@ -182,12 +182,13 @@ exports.signature_validate = function(req, res, next){
 			// 目录
 			var folder = util.format(new Date(), 'YYMMdd');
 			// TODO
-			proxy.upload.saveNew({
+			var newInfo = {
 				tenantid: user.id,
 				userid: req.query.userid,
 				filename: filename,
 				url: folder +'/'+ filename
-			}, function (err, doc){
+			};
+			proxy.upload.saveNew(newInfo, function (err, doc){
 				if(err){
 					// 删除已上传的文件
 					// TODO
@@ -205,7 +206,7 @@ exports.signature_validate = function(req, res, next){
 						// 返回值
 						result.data = {
 							name: '',
-							url: conf.upload.http + user.id +'/'+ folder +'/'+ filename,
+							url: conf.upload.http + user.id +'/'+ newInfo.url,
 							type: suffix
 						};
 						result.success = true;
