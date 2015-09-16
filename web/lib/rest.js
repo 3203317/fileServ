@@ -41,3 +41,27 @@ exports.validate = function(data, seckey){
 	// TODO
 	return !0;
 };
+
+/**
+ * 生成ApiKey
+ *
+ * @param
+ * @return
+ */
+var genApiKey = exports.genApiKey = function(){
+	var diffiehellman = crypto.createDiffieHellman(256);
+	var key = diffiehellman.generateKeys('base64');
+	var result = encodeURIComponent(key.toString('utf-8'));
+	return result;
+};
+
+
+/**
+ * 生成秘钥
+ *
+ * @param
+ * @return
+ */
+exports.genSecKey = function(){
+	return genApiKey();
+};
