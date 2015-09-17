@@ -96,9 +96,9 @@ exports.genSignature = function(data, seckey){
 	newObj = sortByObjKey(newObj);
 	var arr = toReqParamByObj(newObj);
 	// TODO
-	var paramStr = (arr.join('&')).toLowerCase();
+	var paramStr = encodeURIComponent(arr.join('&').toLowerCase());
 	var signature = crypto.createHmac('sha1', seckey).update(paramStr).digest().toString('base64');
-	return encodeURIComponent(signature);
+	return signature;
 };
 
 /**
@@ -124,7 +124,7 @@ var genApiKey = exports.genApiKey = function(){
 	var diffiehellman = crypto.createDiffieHellman(256);
 	var key = diffiehellman.generateKeys('base64');
 	var result = key.toString('utf-8');
-	return encodeURIComponent(result);
+	return result;
 };
 
 /**

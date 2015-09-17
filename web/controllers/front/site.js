@@ -92,7 +92,8 @@ exports.testUI = function(req, res, next){
 			ts: (new Date()).valueOf()
 		};
 		// 生成票据
-		apiParams.signature = rest.genSignature(apiParams, doc.SECKEY);
+		apiParams.signature = encodeURIComponent(rest.genSignature(apiParams, doc.SECKEY));
+		apiParams.apikey = encodeURIComponent(doc.APIKEY);
 		// render
 		res.render('front/Test', {
 			conf: conf,
@@ -118,10 +119,6 @@ exports.signature_validate = function(req, res, next){
 	if(!((curTime - conf.upload.sign_ts) < query.ts && query.ts < (curTime + conf.upload.sign_ts))){
 		if(req.xhr) return res.send({ success: false, msg: '签名已失效' });
 		return res.redirect('/user/login?refererUrl='+ escape(req.url));
-	}
-	// TODO
-	for(var i in query){
-		query[i] = encodeURIComponent(query[i]);
 	}
 	// TODO
 	proxy.user.findByApiKey(query.apikey, function (err, doc){
