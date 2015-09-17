@@ -13,6 +13,7 @@
     "log4js": "0.6.21",
     "speedt-utils": "0.1.36",
     "formidable": "1.0.17",
+    "underscore": "1.8.3",
     "eventproxy": "0.3.1"
   }
 }

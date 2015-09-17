@@ -81,23 +81,28 @@ exports.uploadUI = function(req, res, next){
  * @return
  */
 exports.testUI = function(req, res, next){
-	var apiParams = {
-		userid: '6eb3e005b155437283fc4968840f59f1',
-		apikey: '123456789',
-		command: 'upload',
-		ts: (new Date()).valueOf()
-	};
-	// 生成票据
-	apiParams.signature = rest.genSignature(apiParams, getSecKey());
-
-	res.render('front/Test', {
-		conf: conf,
-		title: '上传测试 | '+ conf.corp.name,
-		description: '',
-		keywords: ',fileServ,html5',
-		data: {
-			apiParams: apiParams
-		}
+	// TODO
+	proxy.user.findByApiKey('apikey', function (err, doc){
+		if(err) return next(err);
+		// TODO
+		var apiParams = {
+			userid: doc.id,
+			apikey: doc.APIKEY,
+			command: 'upload',
+			ts: (new Date()).valueOf()
+		};
+		// 生成票据
+		apiParams.signature = rest.genSignature(apiParams, doc.SECKEY);
+		// render
+		res.render('front/Test', {
+			conf: conf,
+			title: '上传测试 | '+ conf.corp.name,
+			description: '',
+			keywords: ',fileServ,html5',
+			data: {
+				apiParams: apiParams
+			}
+		});
 	});
 };
 
@@ -267,13 +272,3 @@ exports.loginUI = function(req, res, next){
 		refererUrl: escape(req.url)
 	});
 };
-
-/**
- * 获取系统Key
- *
- * @param
- * @return
- */
-function getSecKey(){
-	return 'ABCDEFGHI';
-}
