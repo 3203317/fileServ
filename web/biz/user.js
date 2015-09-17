@@ -17,8 +17,8 @@ exports.findByApiKey = function(apikey, cb){
 	var doc = {
 		id: '6eb3e005b155437283fc4968840f59f1',
 		MAX_UPLOAD_SIZE: 20,  // KB
-		APIKEY: 'EpjQPzyG1WKcK0tn4UukJXj2qHdxkgE%2BQLikKNAw%2FU8%3D',
-		SECKEY: 'cCIziQoHa8R4V9mLBIOjgi1MxB7DY9e1p8Cwd46cuMs%3D'
+		APIKEY: 'fBgUxl32qsRGeB6uWION9pHFMUMA8TF8Vffz5E56gGg%3D',
+		SECKEY: 'YBiOXsQ0qBUe8m99zjP8tZweqAWi2TXcLVWN289uFFU%3D'
 	};
 	cb(null, doc);
 };

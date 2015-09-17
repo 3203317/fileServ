@@ -120,6 +120,10 @@ exports.signature_validate = function(req, res, next){
 		return res.redirect('/user/login?refererUrl='+ escape(req.url));
 	}
 	// TODO
+	for(var i in query){
+		query[i] = encodeURIComponent(query[i]);
+	}
+	// TODO
 	proxy.user.findByApiKey(query.apikey, function (err, doc){
 		if(err) return next(err);
 		// TODO
