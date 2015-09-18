@@ -62,6 +62,10 @@ exports.uploadUI = function(req, res, next){
 		ts: query.ts,
 		signature: query.signature
 	};
+	// TODO
+	for(var i in apiParams){
+		apiParams[i] = encodeURIComponent(apiParams[i]);
+	}
 
 	res.render('front/Upload', {
 		conf: conf,
@@ -93,8 +97,10 @@ exports.testUI = function(req, res, next){
 		};
 		// 生成票据
 		apiParams.signature = rest.genSignature(apiParams, doc.SECKEY);
-		apiParams.signature = encodeURIComponent(apiParams.signature);
-		apiParams.apikey = encodeURIComponent(doc.APIKEY);
+		// TODO
+		for(var i in apiParams){
+			apiParams[i] = encodeURIComponent(apiParams[i]);
+		}
 		// render
 		res.render('front/Test', {
 			conf: conf,
