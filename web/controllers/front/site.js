@@ -86,13 +86,14 @@ exports.testUI = function(req, res, next){
 		if(err) return next(err);
 		// TODO
 		var apiParams = {
-			userid: doc.id,
+			userid: '4fc93b468ac94c9f8d2be56b80af8e96',
 			apikey: doc.APIKEY,
 			command: 'upload',
 			ts: (new Date()).valueOf()
 		};
 		// 生成票据
-		apiParams.signature = encodeURIComponent(rest.genSignature(apiParams, doc.SECKEY));
+		apiParams.signature = rest.genSignature(apiParams, doc.SECKEY);
+		apiParams.signature = encodeURIComponent(apiParams.signature);
 		apiParams.apikey = encodeURIComponent(doc.APIKEY);
 		// render
 		res.render('front/Test', {
