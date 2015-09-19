@@ -154,10 +154,39 @@ exports.signature_validate = function(req, res, next){
 	 */
 	function getUploader(user){
 		var uploader = new formidable.IncomingForm();  // 创建上传表单
-		uploader.encoding = 'utf-8';  // 设置编辑
+		uploader.encoding = 'utf-8';  // 设置编码
 		uploader.uploadDir = path.join(conf.upload.save, '_tmp');  // 设置上传目录
 		uploader.keepExtensions = !0;  // 保留后缀
 		uploader.maxFieldsSize = 1024 * user.MAX_UPLOAD_SIZE;  // 文件大小
+
+		uploader.on('progress', function (bytesReceived, bytesExpected){
+			console.log('progress');
+			console.log(arguments);
+		});
+
+		uploader.on('error', function (err){
+			console.log(arguments);
+		});
+
+		uploader.on('field', function (name, value){
+			console.log('field');
+			console.log(arguments);
+		});
+
+		uploader.on('fileBegin', function (name, file){
+			console.log('fileBegin');
+			console.log(arguments);
+		});
+
+		uploader.on('file', function (name, file){
+			console.log('file');
+			console.log(arguments);
+		});
+
+		uploader.on('end', function(){
+			console.log('end');
+			console.log(arguments);
+		});
 		return uploader;
 	}
 
