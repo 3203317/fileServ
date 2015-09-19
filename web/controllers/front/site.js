@@ -147,58 +147,14 @@ exports.signature_validate = function(req, res, next){
 
 (function (exports){
 	/**
-	 * 获取上传对象
-	 *
-	 * @param
-	 * @return
-	 */
-	function getUploader(user){
-		var uploader = new formidable.IncomingForm();  // 创建上传表单
-		uploader.encoding = 'utf-8';  // 设置编码
-		uploader.uploadDir = path.join(conf.upload.save, '_tmp');  // 设置上传目录
-		uploader.keepExtensions = !0;  // 保留后缀
-		uploader.maxFieldsSize = 1024 * user.MAX_UPLOAD_SIZE;  // 文件大小
-
-		uploader.on('progress', function (bytesReceived, bytesExpected){
-			console.log('progress');
-			console.log(arguments);
-		});
-
-		uploader.on('error', function (err){
-			console.log(arguments);
-		});
-
-		uploader.on('field', function (name, value){
-			console.log('field');
-			console.log(arguments);
-		});
-
-		uploader.on('fileBegin', function (name, file){
-			console.log('fileBegin');
-			console.log(arguments);
-		});
-
-		uploader.on('file', function (name, file){
-			console.log('file');
-			console.log(arguments);
-		});
-
-		uploader.on('end', function(){
-			console.log('end');
-			console.log(arguments);
-		});
-		return uploader;
-	}
-
-	/**
 	 * 获取文件后缀
 	 *
 	 * @param
 	 * @return
 	 */
-	function getFileSuffix(filename){
-		var idx = filename.lastIndexOf('.');
-		var suffix = filename.substring(idx, filename.length);
+	function getFileSuffix(fileName){
+		var idx = fileName.lastIndexOf('.');
+		var suffix = fileName.substring(idx, fileName.length);
 		return suffix.toLowerCase();
 	}
 
@@ -212,48 +168,75 @@ exports.signature_validate = function(req, res, next){
 		var result = { success: false };
 		// TODO
 		var user = req.flash('user')[0];
-		// 获取上传对象
-		var uploader = getUploader(user);
-		// 准备上传
-		uploader.parse(req, function (err, fields, files){
-			if(err) return cb(err);
-			// 后缀
-			var suffix = getFileSuffix(fields.Filename);
-			// 文件名+后缀
-			var filename = util.uuid() + suffix;
-			// 目录
-			var folder = util.format(new Date(), 'YYMMdd');
+		// TODO
+		var folderName = util.format(new Date(), 'YYMMdd');
+		// 创建年月日目录
+		fs.exists(path.join(conf.upload.save, user.id, folderName), function (exists){
+			if(!exists){
+				var model = fs.mkdirSync(path.join(conf.upload.save, user.id, folderName), 777);
+				if(model) return cb(new Error(model));
+			}
+
+			// 获取上传对象
+			var uploader = new formidable.IncomingForm();  // 创建上传表单
+			uploader.encoding = 'utf-8';  // 设置编码
+			uploader.uploadDir = path.join(conf.upload.save, user.id, folderName);  // 设置上传目录
+			uploader.keepExtensions = !0;  // 保留后缀
+			uploader.maxFieldsSize = 1024 * user.MAX_UPLOAD_SIZE;  // 文件大小
+
 			// TODO
-			var newInfo = {
-				tenantid: user.id,
-				userid: req.query.userid,
-				filename: filename,
-				url: folder +'/'+ filename
-			};
-			proxy.upload.saveNew(newInfo, function (err, doc){
-				if(err){
-					// 删除已上传的文件
-					// TODO
-					return cb(err);
-				}
-				// 检测目录是否存在
-				fs.exists(path.join(conf.upload.save, user.id, folder), function (exists){
-					if(!exists){
-						var model = fs.mkdirSync(path.join(conf.upload.save, user.id, folder), 777);
-						if(model) return cb(new Error(model));
+			uploader.on('progress', function (bytesReceived, bytesExpected){
+				// console.log('progress');
+				// console.log(arguments);
+			});
+
+			uploader.on('error', function (err){
+				// console.log(arguments);
+			});
+
+			uploader.on('field', function (name, value){
+				// console.log('field');
+				// console.log(arguments);
+			});
+
+			uploader.on('fileBegin', function (name, file){
+				// console.log('fileBegin');
+				// console.log(arguments);
+			});
+
+			uploader.on('file', function (name, file){
+				// console.log('file');
+				// console.log(arguments);
+			});
+
+			// 准备上传
+			uploader.parse(req, function (err, fields, files){
+				if(err) return cb(err);
+				// 后缀
+				var suffix = getFileSuffix(fields.Filename);
+				// 文件名+后缀
+				var fileName = path.basename(files.foreworld.path);
+				// TODO
+				var newInfo = {
+					tenantid: user.id,
+					userid: req.query.userid,
+					fileName: fileName,
+					url: folderName +'/'+ fileName
+				};
+				proxy.upload.saveNew(newInfo, function (err, doc){
+					if(err){
+						// 删除已上传的文件
+						// TODO
+						return cb(err);
 					}
-					// 重命名
-					fs.rename(files.Filedata.path, path.join(conf.upload.save, user.id, folder, filename), function (err){
-						if(err) return cb(err);
-						// 返回值
-						result.data = {
-							name: '',
-							url: conf.upload.http + user.id +'/'+ newInfo.url,
-							type: suffix
-						};
-						result.success = true;
-						cb(null, result);
-					});
+					// 返回值
+					result.data = {
+						name: '',
+						url: conf.upload.http + user.id +'/'+ newInfo.url,
+						type: suffix
+					};
+					result.success = true;
+					cb(null, result);
 				});
 			});
 		});
