@@ -16,9 +16,12 @@ var md5 = require('speedt-utils').md5;
 exports.findByApiKey = function(apikey, cb){
 	var doc = {
 		id: '6eb3e005b155437283fc4968840f59f1',
-		MAX_UPLOAD_SIZE: 20,  // KB
 		APIKEY: 'QyRzk8sm7AkiJIYmBaaoJpZ3NMGwNEhipQQ4ubKtSOk=',
-		SECKEY: 'qGdOYeX/ECVCJlVLi0+hLJjKInrtyGThlmzt22P013Y='
+		SECKEY: 'qGdOYeX/ECVCJlVLi0+hLJjKInrtyGThlmzt22P013Y=',
+		UPLOADS: {
+			'.jpg': 20,  // KB
+			'.png': 20
+		}
 	};
 	cb(null, doc);
 };

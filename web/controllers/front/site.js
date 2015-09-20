@@ -182,7 +182,7 @@ exports.signature_validate = function(req, res, next){
 			uploader.encoding = 'utf-8';  // 设置编码
 			uploader.uploadDir = path.join(conf.upload.save, user.id, folderName);  // 设置上传目录
 			uploader.keepExtensions = !0;  // 保留后缀
-			uploader.maxFieldsSize = 1024 * user.MAX_UPLOAD_SIZE;  // 文件大小
+			uploader.maxFieldsSize = 1024 * 20;  // 文件大小
 
 			// TODO
 			uploader.on('progress', function (bytesReceived, bytesExpected){
