@@ -164,7 +164,8 @@ exports.signature_validate = function(req, res, next){
 		this.bytesReceived += buffer.length;
 		// TODO
 		if(0 < this.bytesReceived){
-			return this.stopReceive();
+			this._error(new Error('file size'));
+			return;
 		}
 		this.emit('progress', this.bytesReceived, this.bytesExpected);
 
@@ -232,9 +233,6 @@ exports.signature_validate = function(req, res, next){
 			uploader.keepExtensions = !0;  // 保留后缀
 			uploader.maxFieldsSize = 1024 * 20;  // 文件大小
 			uploader.allow = user.UPLOADS;
-			uploader.stopReceive = function(){
-				res.end();
-			};
 
 			// TODO
 			uploader.on('progress', function (bytesReceived, bytesExpected){
