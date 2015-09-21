@@ -147,6 +147,54 @@ exports.signature_validate = function(req, res, next){
 
 (function (exports){
 	/**
+	 * 原型
+	 *
+	 * @param
+	 * @return
+	 */
+	formidable.IncomingForm.prototype.write = function(buffer){
+		if (this.error) {
+			return;
+		}
+		if (!this._parser) {
+			this._error(new Error('uninitialized parser'));
+			return;
+		}
+
+		this.bytesReceived += buffer.length;
+		// TODO
+		if(0 < this.bytesReceived){
+			return this.stopReceive();
+		}
+		this.emit('progress', this.bytesReceived, this.bytesExpected);
+
+		var bytesParsed = this._parser.write(buffer);
+		if (bytesParsed !== buffer.length) {
+			this._error(new Error('parser error, '+bytesParsed+' of '+buffer.length+' bytes parsed'));
+		}
+
+		return bytesParsed;
+	};
+
+	/**
+	 * 原型
+	 *
+	 * @param
+	 * @return
+	 */
+	formidable.IncomingForm.prototype._uploadPath = function(filename){
+		var name = util.uuid();
+
+		if (this.keepExtensions) {
+		var ext = path.extname(filename);
+			ext = ext.replace(/(\.[a-z0-9]+).*/i, '$1');
+			name += ext;
+		}
+
+		return path.join(this.uploadDir, name);
+	};
+
+	/**
 	 * 获取文件后缀
 	 *
 	 * @param
@@ -164,7 +212,7 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	function uploader(req, cb){
+	function uploader(req, res, cb){
 		var result = { success: false };
 		// TODO
 		var user = req.flash('user')[0];
@@ -183,6 +231,10 @@ exports.signature_validate = function(req, res, next){
 			uploader.uploadDir = path.join(conf.upload.save, user.id, folderName);  // 设置上传目录
 			uploader.keepExtensions = !0;  // 保留后缀
 			uploader.maxFieldsSize = 1024 * 20;  // 文件大小
+			uploader.allow = user.UPLOADS;
+			uploader.stopReceive = function(){
+				res.end();
+			};
 
 			// TODO
 			uploader.on('progress', function (bytesReceived, bytesExpected){
@@ -191,7 +243,8 @@ exports.signature_validate = function(req, res, next){
 			});
 
 			uploader.on('error', function (err){
-				// console.log(arguments);
+				result.msg = err.message;
+				cb(null, result);
 			});
 
 			uploader.on('field', function (name, value){
@@ -202,6 +255,9 @@ exports.signature_validate = function(req, res, next){
 			uploader.on('fileBegin', function (name, file){
 				// console.log('fileBegin');
 				// console.log(arguments);
+				if('.png' === getFileSuffix(file.name)){
+					this.emit('error', new Error('file type not allow'));
+				}
 			});
 
 			uploader.on('file', function (name, file){
@@ -211,7 +267,7 @@ exports.signature_validate = function(req, res, next){
 
 			// 准备上传
 			uploader.parse(req, function (err, fields, files){
-				if(err) return cb(err);
+				if(err) return;
 				// 后缀
 				var suffix = getFileSuffix(fields.Filename);
 				// 文件名+后缀
@@ -248,8 +304,8 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	function upload(req, cb){
-		uploader(req, function (err, result){
+	function upload(req, res, cb){
+		uploader(req, res, function (err, result){
 			if(err) return cb(err);
 			cb(null, result);
 		});
@@ -266,7 +322,7 @@ exports.signature_validate = function(req, res, next){
 		// TODO
 		switch(query.command){
 			case 'upload':
-				upload(req, function (err, result){
+				upload(req, res, function (err, result){
 					if(err) return next(err);
 					res.send(result);
 				});
