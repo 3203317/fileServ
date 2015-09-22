@@ -161,10 +161,37 @@ exports.signature_validate = function(req, res, next){
 			return;
 		}
 
+		// TODO
+		var rems = [];
+		for(var i = 0, j = buffer.length; i < j; i++){
+			var r = buffer[i];
+			var n = buffer[i+1];
+			if(13 === r && 10 === n) rems.push(i);
+		}
+
+		var content_type = buffer.slice(rems[5], rems[6]);
+		if('Content-Type: application/octet-stream' !== content_type.toString().trim()){
+			// File type error
+			this._error(new Error('FILE_TYPE_ERR'));
+			return;
+		}
+
+		var content_dis = buffer.slice(rems[3] + 46, rems[5]);
+		var filename = content_dis.toString().match(/filename=".*"/g)[0].split('"')[1];
+		// 该文件类型允许的最大上传文件大小
+		var maxSize = this.allowFileType[getFileSuffix(filename)];
+
+		if(!maxSize){
+			// File type deny
+			this._error(new Error('FILE_TYPE_DENY'));
+			return;
+		}
+
 		this.bytesReceived += buffer.length;
 		// TODO
-		if(0 < this.bytesReceived){
-			this._error(new Error('file size'));
+		if(maxSize < this.bytesReceived){
+			// File size exceeds the maximum file size limit allowed
+			this._error(new Error('FILE_SIZE_OUT'));
 			return;
 		}
 		this.emit('progress', this.bytesReceived, this.bytesExpected);
@@ -203,6 +230,7 @@ exports.signature_validate = function(req, res, next){
 	 */
 	function getFileSuffix(fileName){
 		var idx = fileName.lastIndexOf('.');
+		if(-1 === idx) return '';
 		var suffix = fileName.substring(idx, fileName.length);
 		return suffix.toLowerCase();
 	}
@@ -232,7 +260,7 @@ exports.signature_validate = function(req, res, next){
 			uploader.uploadDir = path.join(conf.upload.save, user.id, folderName);  // 设置上传目录
 			uploader.keepExtensions = !0;  // 保留后缀
 			uploader.maxFieldsSize = 1024 * 20;  // 文件大小
-			uploader.allow = user.UPLOADS;
+			uploader.allowFileType = user.UPLOADS;
 
 			// TODO
 			uploader.on('progress', function (bytesReceived, bytesExpected){
@@ -253,9 +281,6 @@ exports.signature_validate = function(req, res, next){
 			uploader.on('fileBegin', function (name, file){
 				// console.log('fileBegin');
 				// console.log(arguments);
-				if('.png' === getFileSuffix(file.name)){
-					this.emit('error', new Error('file type not allow'));
-				}
 			});
 
 			uploader.on('file', function (name, file){

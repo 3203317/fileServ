@@ -76,7 +76,7 @@
 				queueSizeLimit: 5,
 				buttonCursor: 'arrow',
 				requeueErrors: !0,
-				fileSizeLimit: 20,
+				fileSizeLimit: 50,
 				fileObjName: 'foreworld',
 				method: 'get',
 				auto: !1,
@@ -98,7 +98,22 @@
 					if(!response) return;
 					var obj = JSON.parse(data);
 					if(!obj.success){
-						return alert(obj.msg);
+						var msg = '';
+						switch(obj.msg){
+							case 'FILE_TYPE_ERR':
+								msg = '文件类型错误';
+								break;
+							case 'file_type_deny':
+								msg = '禁止上传此类型文件';
+								break;
+							case 'FILE_SIZE_OUT':
+								msg = '文件大小超出规定';
+								break;
+							default:
+								msg = obj.msg;
+								break;
+						}
+						alert(msg);
 					}
 					// TODO
 					returnData.push(obj.data);

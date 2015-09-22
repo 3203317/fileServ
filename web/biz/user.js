@@ -19,8 +19,8 @@ exports.findByApiKey = function(apikey, cb){
 		APIKEY: 'QyRzk8sm7AkiJIYmBaaoJpZ3NMGwNEhipQQ4ubKtSOk=',
 		SECKEY: 'qGdOYeX/ECVCJlVLi0+hLJjKInrtyGThlmzt22P013Y=',
 		UPLOADS: {
-			'.jpg': 20,  // KB
-			'.png': 20
+			'.jpg': 1024 * 50,  // B 字节
+			'.png': 1024 * 51
 		}
 	};
 	cb(null, doc);
