@@ -14,6 +14,8 @@ var front = {
 var back = {};
 var manage = {};
 
+var gps = require('../controllers/gps');
+
 /**
  *
  * @param
@@ -23,6 +25,7 @@ module.exports = function(app){
 	proc_front(app);
 	proc_back(app);
 	proc_manage(app);
+	proc_gps(app);
 };
 
 /**
@@ -38,6 +41,10 @@ function proc_front(app){
 
 	app.get('/user/login$', front.site.loginUI);
 	app.get('/', front.site.indexUI);
+}
+
+function proc_gps(app){
+	app.get('/gps$', gps.api);
 }
 
 /**
