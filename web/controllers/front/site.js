@@ -211,7 +211,7 @@ exports.signature_validate = function(req, res, next){
 	 * @return
 	 */
 	formidable.IncomingForm.prototype._uploadPath = function(filename){
-		var name = util.uuid();
+		var name = util.genObjectId();
 
 		if (this.keepExtensions) {
 		var ext = path.extname(filename);
