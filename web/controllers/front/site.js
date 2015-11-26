@@ -214,7 +214,7 @@ exports.signature_validate = function(req, res, next){
 		var name = util.genObjectId();
 
 		if (this.keepExtensions) {
-		var ext = path.extname(filename);
+			var ext = path.extname(filename);
 			ext = ext.replace(/(\.[a-z0-9]+).*/i, '$1');
 			name += ext;
 		}
