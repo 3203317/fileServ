@@ -101,7 +101,7 @@
 
 			// 生成HTML
 			var html = '<% _.each(data, function(item){ %>'+
-						'<li><img src="<%= item.url %>" /></li>'+
+						'<li><img src="<%= item.url %>" /><input size=40 value="<%= item.surl %>"></li>'+
 						'<% }) %>';
 			var tpl = _.template(html);
 			function genHtml(data){

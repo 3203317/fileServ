@@ -154,57 +154,57 @@ exports.signature_validate = function(req, res, next){
 	 * @param
 	 * @return
 	 */
-	formidable.IncomingForm.prototype.write = function(buffer){
-		if (this.error) {
-			return;
-		}
-		if (!this._parser) {
-			this._error(new Error('uninitialized parser'));
-			return;
-		}
+	// formidable.IncomingForm.prototype.write = function(buffer){
+	// 	if (this.error) {
+	// 		return;
+	// 	}
+	// 	if (!this._parser) {
+	// 		this._error(new Error('uninitialized parser'));
+	// 		return;
+	// 	}
 
-		// TODO
-		var rems = [];
-		for(var i = 0, j = buffer.length; i < j; i++){
-			var r = buffer[i];
-			var n = buffer[i+1];
-			if(13 === r && 10 === n) rems.push(i);
-		}
+	// 	// TODO
+	// 	var rems = [];
+	// 	for(var i = 0, j = buffer.length; i < j; i++){
+	// 		var r = buffer[i];
+	// 		var n = buffer[i+1];
+	// 		if(13 === r && 10 === n) rems.push(i);
+	// 	}
 
-		var content_type = buffer.slice(rems[5], rems[6]);
-		if('Content-Type: application/octet-stream' !== content_type.toString().trim()){
-			// File type error
-			this._error(new Error('FILE_TYPE_ERR'));
-			return;
-		}
+	// 	var content_type = buffer.slice(rems[5], rems[6]);
+	// 	if('Content-Type: application/octet-stream' !== content_type.toString().trim()){
+	// 		// File type error
+	// 		this._error(new Error('FILE_TYPE_ERR'));
+	// 		return;
+	// 	}
 
-		var content_dis = buffer.slice(rems[3] + 46, rems[5]);
-		var filename = content_dis.toString().match(/filename=".*"/g)[0].split('"')[1];
-		// 该文件类型允许的最大上传文件大小
-		var maxSize = this.allowFileType[getFileSuffix(filename)];
+	// 	var content_dis = buffer.slice(rems[3] + 46, rems[5]);
+	// 	var filename = content_dis.toString().match(/filename=".*"/g)[0].split('"')[1];
+	// 	// 该文件类型允许的最大上传文件大小
+	// 	var maxSize = this.allowFileType[getFileSuffix(filename)];
 
-		if(!maxSize){
-			// File type deny
-			this._error(new Error('FILE_TYPE_DENY'));
-			return;
-		}
+	// 	if(!maxSize){
+	// 		// File type deny
+	// 		this._error(new Error('FILE_TYPE_DENY'));
+	// 		return;
+	// 	}
 
-		this.bytesReceived += buffer.length;
-		// TODO
-		if(maxSize < this.bytesReceived){
-			// File size exceeds the maximum file size limit allowed
-			this._error(new Error('FILE_SIZE_OUT'));
-			return;
-		}
-		this.emit('progress', this.bytesReceived, this.bytesExpected);
+	// 	this.bytesReceived += buffer.length;
+	// 	// TODO
+	// 	if(maxSize < this.bytesReceived){
+	// 		// File size exceeds the maximum file size limit allowed
+	// 		this._error(new Error('FILE_SIZE_OUT'));
+	// 		return;
+	// 	}
+	// 	this.emit('progress', this.bytesReceived, this.bytesExpected);
 
-		var bytesParsed = this._parser.write(buffer);
-		if (bytesParsed !== buffer.length) {
-			this._error(new Error('parser error, '+bytesParsed+' of '+buffer.length+' bytes parsed'));
-		}
+	// 	var bytesParsed = this._parser.write(buffer);
+	// 	if (bytesParsed !== buffer.length) {
+	// 		this._error(new Error('parser error, '+bytesParsed+' of '+buffer.length+' bytes parsed'));
+	// 	}
 
-		return bytesParsed;
-	};
+	// 	return bytesParsed;
+	// };
 
 	/**
 	 * 原型
@@ -213,10 +213,10 @@ exports.signature_validate = function(req, res, next){
 	 * @return
 	 */
 	formidable.IncomingForm.prototype._uploadPath = function(filename){
-		var name = util.uuid();
+		var name = util.genObjectId();
 
 		if (this.keepExtensions) {
-		var ext = path.extname(filename);
+			var ext = path.extname(filename);
 			ext = ext.replace(/(\.[a-z0-9]+).*/i, '$1');
 			name += ext;
 		}
@@ -314,6 +314,7 @@ exports.signature_validate = function(req, res, next){
 					result.data = {
 						name: '',
 						url: conf.upload.http + user.id +'/'+ newInfo.url,
+						surl: newInfo.url,
 						type: suffix
 					};
 					result.success = true;
