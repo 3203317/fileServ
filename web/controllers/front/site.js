@@ -10,6 +10,8 @@ var util = require('speedt-utils'),
 
 var formidable = require('formidable');
 
+var qiniu = require('qiniu');
+
 var conf = require('../../settings'),
 	rest = require('../../lib/rest');
 
@@ -321,6 +323,43 @@ exports.signature_validate = function(req, res, next){
 		});
 	}
 
+
+	function upload_qiniu(req, res, cb){
+		//需要填写你的 Access Key 和 Secret Key
+		qiniu.conf.ACCESS_KEY = 'x1FV4QyepwWQkjXgKtYUnejyibKO5ZABB2P4oxQe';
+		qiniu.conf.SECRET_KEY = 'reC7PeI9zY0tLzVfilUWbbibbFtO8riWfBKngETv';
+
+		//要上传的空间
+		var bucket = 'goldxin';
+
+		//上传到七牛后保存的文件名
+		var key = 'rr/my-nodejs-logo.jpg';
+
+		//构建上传策略函数
+		function uptoken(bucket, key) {
+			var putPolicy = new qiniu.rs.PutPolicy(bucket +':'+ key);
+			return putPolicy.token();
+		}
+
+		//生成上传 Token
+		var token = uptoken(bucket, key);
+
+		//要上传文件的本地路径
+		var filePath = 'd:/5e1b287fgw1f3ex6kz06wj20xc1e07wh.JPG';
+
+		//构造上传函数
+		function uploadFile(uptoken, key, localFile){
+			var extra = new qiniu.io.PutExtra();
+			qiniu.io.putFile(uptoken, key, localFile, extra, function (err, ret){
+				if(err) return next(err);
+				cb(null, result);
+			});
+		}
+
+		//调用uploadFile上传
+		uploadFile(token, key, filePath);
+	}
+
 	/**
 	 * 上传
 	 *
@@ -346,6 +385,12 @@ exports.signature_validate = function(req, res, next){
 		switch(query.command){
 			case 'upload':
 				upload(req, res, function (err, result){
+					if(err) return next(err);
+					res.send(result);
+				});
+				break;
+			case 'upload_qiniu':
+				upload_qiniu(req, res, function (err, result){
 					if(err) return next(err);
 					res.send(result);
 				});

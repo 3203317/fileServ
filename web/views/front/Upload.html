@@ -69,7 +69,8 @@
 				url += '&signature=$!data.apiParams.signature';
 				url += '&userid=$!data.apiParams.userid';
 				url += '&ts=$!data.apiParams.ts';
-				url += '&command=$!data.apiParams.command';
+				// url += '&command=$!data.apiParams.command';
+				url += '&command=upload_qiniu';
 
 			$('#upFrm_file_Choose').uploadify({
 				debug: !1,

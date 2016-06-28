@@ -6,6 +6,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "qiniu": "*",
     "express": "3.5.0",
     "velocityjs": "0.4.6",
     "connect-flash": "0.1.1",
